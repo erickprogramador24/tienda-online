@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Best Shop E-commerce</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Material UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #131921;
+            --secondary-color: #232f3e;
+            --accent-color: #ff9900;
+            --light-bg: #f8f9fa;
+            --dark-bg: #0f1419;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #1e293b;
+            --text-dark: #e2e8f0;
+            --border-dark: #334155;
+            --input-bg-dark: #1e293b;
+            --hover-bg-dark: #334155;
+            --star-color: #fbbf24;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .glass-effect-dark {
+            background: rgba(30, 35, 41, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .cart-notification {
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .image-gallery {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        .image-gallery img {
+            scroll-snap-align: start;
+            flex-shrink: 0;
+        }
+        .dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--text-dark);
+        }
+        .dark-mode .product-card {
+            background-color: var(--card-bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+        .dark-mode .light-card {
+            background-color: var(--card-bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+        .dark-mode .category-card {
+            background-color: var(--card-bg-dark);
+            border-color: var(--border-dark);
+        }
+        .light-mode {
+            background-color: var(--light-bg);
+            color: #1f2937;
+        }
+        .dark-card {
+            background-color: var(--card-bg-dark);
+            border: 1px solid var(--border-dark);
+        }
+        .smooth-transition {
+            transition: all 0.3s ease;
+        }
+        /* Estilos personalizados para los botones de producto */
+        .product-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        .view-product-btn {
+            background-color: #232f3e;
+            color: white;
+            border: 1px solid #232f3e;
+            transition: all 0.3s ease;
+        }
+        .view-product-btn:hover {
+            background-color: #131921;
+            color: white;
+        }
+        /* Estilos para el carrito en modo oscuro */
+        .dark-mode #cart-sidebar {
+            background-color: var(--card-bg-dark);
+            border-left: 1px solid var(--border-dark);
+        }
+        .dark-mode .cart-item {
+            border-bottom-color: var(--border-dark);
+        }
+        .dark-mode .quantity-controls {
+            background-color: var(--input-bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+        .dark-mode .quantity-display {
+            background-color: var(--input-bg-dark);
+            color: var(--text-dark);
+        }
+        /* Estilos para inputs en modo oscuro */
+        .dark-mode input,
+        .dark-mode textarea {
+            background-color: var(--input-bg-dark);
+            color: var(--text-dark);
+            border-color: var(--border-dark);
+        }
+        .dark-mode input::placeholder {
+            color: #94a3b8;
+        }
+        /* Scrollbar personalizado para modo oscuro */
+        .dark-mode ::-webkit-scrollbar {
+            width: 8px;
+        }
+        .dark-mode ::-webkit-scrollbar-track {
+            background: var(--card-bg-dark);
+        }
+        .dark-mode ::-webkit-scrollbar-thumb {
+            background: var(--border-dark);
+            border-radius: 4px;
+        }
+        .dark-mode ::-webkit-scrollbar-thumb:hover {
+            background: var(--hover-bg-dark);
+        }
+        /* Estilos para las estrellas en modo oscuro */
+        .dark-mode .star {
+            color: var(--star-color);
+        }
+        /* Estilos para las categorías */
+        .dark-mode .category-title {
+            color: var(--text-dark);
+        }
+        /* Estilos para los precios */
+        .dark-mode .price {
+            color: var(--text-dark);
+        }
+        /* Estilos para los botones del carrito */
+        .dark-mode .cart-btn {
+            background-color: var(--accent-color);
+            color: black;
+        }
+        .dark-mode .cart-btn:hover {
+            background-color: #e68900;
+        }
+        /* Ajuste específico para nombre y descripción del producto en modo oscuro */
+        .dark-mode .product-card h3,
+        .dark-mode .product-card p {
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 smooth-transition">
+        <div class="bg-[#131921] text-white p-2">
+            <div class="container mx-auto flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <span class="material-icons text-3xl mr-2">shopping_cart</span>
+                    <h1 class="text-xl font-bold">Best Shop</h1>
+                </div>
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 mx-4 max-w-2xl">
+                    <input type="text" placeholder="Buscar productos..." class="w-full px-4 py-2 text-gray-800 rounded-l dark:text-white dark:bg-[#1e293b] dark:border-[#334155] dark:placeholder-[#94a3b8]">
+                    <button class="bg-[#febd69] hover:bg-[#f3a847] text-gray-800 px-4 rounded-r">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+                <!-- Navigation -->
+                <div class="flex items-center space-x-4">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="flex items-center p-1 rounded-full hover:bg-[#334155]">
+                        <span class="material-icons" id="theme-icon">dark_mode</span>
+                    </button>
+                    <!-- Account -->
+                    <div class="hidden md:flex flex-col cursor-pointer hover:text-[#febd69]">
+                        <span class="text-xs">Hola, Identifícate</span>
+                        <span class="text-sm font-bold">Cuenta y Listas</span>
+                    </div>
+                    <!-- Returns & Orders -->
+                    <div class="hidden md:flex flex-col cursor-pointer hover:text-[#febd69]">
+                        <span class="text-xs">Devoluciones</span>
+                        <span class="text-sm font-bold">y Pedidos</span>
+                    </div>
+                    <!-- Cart -->
+                    <div class="flex items-center cursor-pointer relative" id="cart-icon">
+                        <span class="material-icons text-2xl">shopping_cart</span>
+                        <span class="absolute -top-1 -right-1 bg-[#ff9900] text-black rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
+                        <span class="ml-1 font-bold hidden md:inline">Carrito</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Mobile Search -->
+            <div class="md:hidden mt-2 px-2">
+                <div class="flex">
+                    <input type="text" placeholder="Buscar productos..." class="w-full px-4 py-2 text-gray-800 rounded-l dark:text-white dark:bg-[#1e293b] dark:border-[#334155] dark:placeholder-[#94a3b8]">
+                    <button class="bg-[#febd69] hover:bg-[#f3a847] text-gray-800 px-4 rounded-r">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Secondary Nav -->
+        <div class="bg-[#232f3e] text-white py-2 px-4">
+            <div class="container mx-auto flex items-center space-x-4 overflow-x-auto">
+                <div class="flex items-center cursor-pointer whitespace-nowrap hover:text-[#febd69]">
+                    <span class="material-icons text-sm mr-1">menu</span>
+                    <span>Todo</span>
+                </div>
+                <div class="cursor-pointer whitespace-nowrap hover:text-[#febd69]">Ofertas del día</div>
+                <div class="cursor-pointer whitespace-nowrap hover:text-[#febd69]">Servicio al Cliente</div>
+                <div class="cursor-pointer whitespace-nowrap hover:text-[#febd69]">Listas</div>
+                <div class="cursor-pointer whitespace-nowrap hover:text-[#febd69]">Tarjetas de Regalo</div>
+                <div class="cursor-pointer whitespace-nowrap hover:text-[#febd69]">Vender</div>
+            </div>
+        </div>
+    </header>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Hero Section -->
+        <section class="mb-8 rounded-lg overflow-hidden relative">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-8 text-white">
+                <h2 class="text-3xl font-bold mb-2">Ofertas de Temporada</h2>
+                <p class="mb-4">Hasta 50% de descuento en productos seleccionados</p>
+                <button class="bg-[#ff9900] hover:bg-[#e68900] text-black font-bold py-2 px-6 rounded">
+                    Ver Ofertas
+                </button>
+            </div>
+        </section>
+        <!-- Products Grid -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 dark:text-[#e2e8f0] category-title">Productos Populares</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Product 1 -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg smooth-transition light-card dark:dark-card dark:border dark:border-[#334155]">
+                    <div class="image-gallery h-48 bg-gray-200 dark:bg-[#334155]">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Auriculares" class="w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Auriculares" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2 dark:text-[#e2e8f0]">Auriculares Inalámbricos</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 star">
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star_half</span>
+                            </div>
+                            <span class="text-sm ml-2 dark:text-[#e2e8f0]">(4.5)</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-[#e2e8f0] text-sm mb-4">Sonido de alta calidad con cancelación de ruido</p>
+                        <div class="product-buttons">
+                            <button class="bg-[#ff9900] hover:bg-[#e68900] text-black py-2 px-3 rounded add-to-cart w-full cart-btn" data-id="1" data-name="Auriculares Inalámbricos" data-price="89.99" data-image="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60">
+                                <span class="material-icons text-sm mr-1">shopping_cart</span>
+                                Añadir al carrito
+                            </button>
+                            <button onclick="window.location.href='product.html'" class="view-product-btn py-2 px-3 rounded w-full flex items-center justify-center dark:bg-[#232f3e] dark:hover:bg-[#131921]">
+                                <span class="material-icons text-sm mr-1">visibility</span>
+                                Ver producto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 2 -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg smooth-transition light-card dark:dark-card dark:border dark:border-[#334155]">
+                    <div class="image-gallery h-48 bg-gray-200 dark:bg-[#334155]">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Smartwatch" class="w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1579586337278-3f436c25d4a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Smartwatch" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2 dark:text-[#e2e8f0]">Smartwatch Deportivo</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 star">
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                            </div>
+                            <span class="text-sm ml-2 dark:text-[#e2e8f0]">(5.0)</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-[#e2e8f0] text-sm mb-4">Monitor de actividad y notificaciones inteligentes</p>
+                        <div class="product-buttons">
+                            <button class="bg-[#ff9900] hover:bg-[#e68900] text-black py-2 px-3 rounded add-to-cart w-full cart-btn" data-id="2" data-name="Smartwatch Deportivo" data-price="129.99" data-image="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60">
+                                <span class="material-icons text-sm mr-1">shopping_cart</span>
+                                Añadir al carrito
+                            </button>
+                            <button onclick="window.location.href='product.html'" class="view-product-btn py-2 px-3 rounded w-full flex items-center justify-center dark:bg-[#232f3e] dark:hover:bg-[#131921]">
+                                <span class="material-icons text-sm mr-1">visibility</span>
+                                Ver producto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 3 -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg smooth-transition light-card dark:dark-card dark:border dark:border-[#334155]">
+                    <div class="image-gallery h-48 bg-gray-200 dark:bg-[#334155]">
+                        <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Cámara" class="w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Cámara" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2 dark:text-[#e2e8f0]">Cámara DSLR Profesional</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 star">
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star_outline</span>
+                            </div>
+                            <span class="text-sm ml-2 dark:text-[#e2e8f0]">(4.0)</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-[#e2e8f0] text-sm mb-4">Captura momentos increíbles con alta resolución</p>
+                        <div class="product-buttons">
+                            <button class="bg-[#ff9900] hover:bg-[#e68900] text-black py-2 px-3 rounded add-to-cart w-full cart-btn" data-id="3" data-name="Cámara DSLR Profesional" data-price="599.99" data-image="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60">
+                                <span class="material-icons text-sm mr-1">shopping_cart</span>
+                                Añadir al carrito
+                            </button>
+                            <button onclick="window.location.href='product.html'" class="view-product-btn py-2 px-3 rounded w-full flex items-center justify-center dark:bg-[#232f3e] dark:hover:bg-[#131921]">
+                                <span class="material-icons text-sm mr-1">visibility</span>
+                                Ver producto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 4 -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg smooth-transition light-card dark:dark-card dark:border dark:border-[#334155]">
+                    <div class="image-gallery h-48 bg-gray-200 dark:bg-[#334155]">
+                        <img src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Portátil" class="w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Portátil" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2 dark:text-[#e2e8f0]">Portátil Ultraligero</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400 star">
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star_half</span>
+                            </div>
+                            <span class="text-sm ml-2 dark:text-[#e2e8f0]">(4.5)</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-[#e2e8f0] text-sm mb-4">Rendimiento excepcional en un diseño compacto</p>
+                        <div class="product-buttons">
+                            <button class="bg-[#ff9900] hover:bg-[#e68900] text-black py-2 px-3 rounded add-to-cart w-full cart-btn" data-id="4" data-name="Portátil Ultraligero" data-price="899.99" data-image="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60">
+                                <span class="material-icons text-sm mr-1">shopping_cart</span>
+                                Añadir al carrito
+                            </button>
+                            <button onclick="window.location.href='product.html'" class="view-product-btn py-2 px-3 rounded w-full flex items-center justify-center dark:bg-[#232f3e] dark:hover:bg-[#131921]">
+                                <span class="material-icons text-sm mr-1">visibility</span>
+                                Ver producto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Featured Categories -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 dark:text-[#e2e8f0] category-title">Categorías Destacadas</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="rounded-lg overflow-hidden shadow-md smooth-transition light-card dark:category-card cursor-pointer hover:shadow-lg dark:border dark:border-[#334155]">
+                    <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Electrónicos" class="w-full h-32 object-cover">
+                    <div class="p-4 text-center dark:bg-[#1e293b]">
+                        <h3 class="font-bold dark:text-[#e2e8f0]">Electrónicos</h3>
+                    </div>
+                </div>
+                <div class="rounded-lg overflow-hidden shadow-md smooth-transition light-card dark:category-card cursor-pointer hover:shadow-lg dark:border dark:border-[#334155]">
+                    <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Deportes" class="w-full h-32 object-cover">
+                    <div class="p-4 text-center dark:bg-[#1e293b]">
+                        <h3 class="font-bold dark:text-[#e2e8f0]">Deportes</h3>
+                    </div>
+                </div>
+                <div class="rounded-lg overflow-hidden shadow-md smooth-transition light-card dark:category-card cursor-pointer hover:shadow-lg dark:border dark:border-[#334155]">
+                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Hogar" class="w-full h-32 object-cover">
+                    <div class="p-4 text-center dark:bg-[#1e293b]">
+                        <h3 class="font-bold dark:text-[#e2e8f0]">Hogar</h3>
+                    </div>
+                </div>
+                <div class="rounded-lg overflow-hidden shadow-md smooth-transition light-card dark:category-card cursor-pointer hover:shadow-lg dark:border dark:border-[#334155]">
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Audio" class="w-full h-32 object-cover">
+                    <div class="p-4 text-center dark:bg-[#1e293b]">
+                        <h3 class="font-bold dark:text-[#e2e8f0]">Audio</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-[#1e293b] shadow-xl z-50 transform translate-x-full transition-transform duration-300 overflow-y-auto dark:border-l dark:border-[#334155]">
+        <div class="p-4 border-b dark:border-[#334155] flex justify-between items-center">
+            <h2 class="text-xl font-bold dark:text-[#e2e8f0]">Tu Carrito</h2>
+            <button id="close-cart" class="text-gray-500 hover:text-gray-700 dark:text-[#94a3b8] dark:hover:text-[#e2e8f0]">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+        <div id="cart-items" class="p-4">
+            <p id="empty-cart-message" class="text-center text-gray-500 dark:text-[#94a3b8] py-8">Tu carrito está vacío</p>
+        </div>
+        <div class="p-4 border-t dark:border-[#334155]">
+            <div class="flex justify-between mb-4">
+                <span class="font-bold dark:text-[#e2e8f0]">Total:</span>
+                <span id="cart-total" class="font-bold dark:text-[#e2e8f0] price">$0.00</span>
+            </div>
+            <button class="w-full bg-[#ff9900] hover:bg-[#e68900] text-black font-bold py-2 px-4 rounded cart-btn">
+                Proceder al Pago
+            </button>
+        </div>
+    </div>
+    <!-- Cart Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    <!-- Add to Cart Notification -->
+    <div id="cart-notification" class="fixed top-4 right-4 bg-green-500 text-white p-4 rounded shadow-lg z-50 hidden cart-notification">
+        <div class="flex items-center">
+            <span class="material-icons mr-2">check_circle</span>
+            <span>Producto añadido al carrito</span>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="bg-[#232f3e] text-white py-8 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Conócenos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Trabajar en Best Shop</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Información corporativa</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Departamento de prensa</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Gana dinero con nosotros</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Vender en Best Shop</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Vender en Best Shop Business</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Programa de afiliados</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Métodos de pago</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Tarjetas de crédito y débito</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Tarjetas de regalo</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Meses sin intereses</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">¿Necesitas ayuda?</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Ver tu carrito</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Estado de pedidos</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Devoluciones</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-600 mt-8 pt-8 text-center">
+                <p class="dark:text-[#e2e8f0]">DESARROLLADO POR ERICK PROGRAMADOR</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+        // Check for saved theme preference or default to light
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            themeIcon.textContent = 'light_mode';
+        }
+        themeToggle.addEventListener('click', () => {
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                themeIcon.textContent = 'light_mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                themeIcon.textContent = 'dark_mode';
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        // Cart Functionality
+        const cartIcon = document.getElementById('cart-icon');
+        const cartSidebar = document.getElementById('cart-sidebar');
+        const closeCart = document.getElementById('close-cart');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const cartItems = document.getElementById('cart-items');
+        const cartCount = document.getElementById('cart-count');
+        const cartTotal = document.getElementById('cart-total');
+        const emptyCartMessage = document.getElementById('empty-cart-message');
+        const cartNotification = document.getElementById('cart-notification');
+        // Cargar carrito desde localStorage o inicializar vacío
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        // Update cart display
+        function updateCartDisplay() {
+            // Update cart count
+            cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+            // Update cart items
+            cartItems.innerHTML = '';
+            if (cart.length === 0) {
+                emptyCartMessage.classList.remove('hidden');
+                cartTotal.textContent = '$0.00';
+            } else {
+                emptyCartMessage.classList.add('hidden');
+                let total = 0;
+                cart.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex items-center mb-4 pb-4 border-b cart-item dark:border-[#334155]';
+                    itemElement.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-bold dark:text-[#e2e8f0]">${item.name}</h3>
+                            <p class="text-gray-600 dark:text-[#94a3b8]">$${item.price} x ${item.quantity}</p>
+                            <div class="flex items-center mt-2">
+                                <button class="decrease-quantity quantity-controls bg-gray-200 dark:bg-[#334155] rounded-l px-2 py-1 dark:text-[#e2e8f0]" data-id="${item.id}">-</button>
+                                <span class="quantity quantity-display bg-gray-100 dark:bg-[#334155] dark:text-[#e2e8f0] px-3 py-1">${item.quantity}</span>
+                                <button class="increase-quantity quantity-controls bg-gray-200 dark:bg-[#334155] rounded-r px-2 py-1 dark:text-[#e2e8f0]" data-id="${item.id}">+</button>
+                                <button class="remove-item text-red-500 ml-4 dark:text-red-400" data-id="${item.id}">
+                                    <span class="material-icons text-sm">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    cartItems.appendChild(itemElement);
+                    total += item.price * item.quantity;
+                });
+                cartTotal.textContent = `$${total.toFixed(2)}`;
+            }
+            // Save cart to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+        // Show cart notification
+        function showCartNotification() {
+            cartNotification.classList.remove('hidden');
+            setTimeout(() => {
+                cartNotification.classList.add('hidden');
+            }, 3000);
+        }
+        // Add to cart functionality
+        function addToCart(id, name, price, image, quantity) {
+            // Check if item already in cart
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id,
+                    name,
+                    price,
+                    image,
+                    quantity: quantity
+                });
+            }
+            updateCartDisplay();
+            showCartNotification();
+        }
+        // Add to cart from buttons
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = e.currentTarget.getAttribute('data-id');
+                const name = e.currentTarget.getAttribute('data-name');
+                const price = parseFloat(e.currentTarget.getAttribute('data-price'));
+                const image = e.currentTarget.getAttribute('data-image');
+                addToCart(id, name, price, image, 1);
+            });
+        });
+        // Event delegation for cart item actions
+        cartItems.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-id]');
+            if (!target) return;
+            const id = target.getAttribute('data-id');
+            if (e.target.classList.contains('increase-quantity') || e.target.parentElement.classList.contains('increase-quantity')) {
+                const item = cart.find(item => item.id === id);
+                if (item) {
+                    item.quantity += 1;
+                    updateCartDisplay();
+                }
+            } else if (e.target.classList.contains('decrease-quantity') || e.target.parentElement.classList.contains('decrease-quantity')) {
+                const item = cart.find(item => item.id === id);
+                if (item && item.quantity > 1) {
+                    item.quantity -= 1;
+                    updateCartDisplay();
+                }
+            } else if (e.target.classList.contains('remove-item') || e.target.parentElement.classList.contains('remove-item')) {
+                cart = cart.filter(item => item.id !== id);
+                updateCartDisplay();
+            }
+        });
+        // Cart sidebar toggle
+        cartIcon.addEventListener('click', () => {
+            cartSidebar.classList.remove('translate-x-full');
+            cartOverlay.classList.remove('hidden');
+        });
+        closeCart.addEventListener('click', () => {
+            cartSidebar.classList.add('translate-x-full');
+            cartOverlay.classList.add('hidden');
+        });
+        cartOverlay.addEventListener('click', () => {
+            cartSidebar.classList.add('translate-x-full');
+            cartOverlay.classList.add('hidden');
+        });
+        // Initialize cart display
+        updateCartDisplay();
+        // Image gallery functionality
+        document.querySelectorAll('.image-gallery').forEach(gallery => {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+            gallery.addEventListener('mousedown', (e) => {
+                isDown = true;
+                gallery.classList.add('active');
+                startX = e.pageX - gallery.offsetLeft;
+                scrollLeft = gallery.scrollLeft;
+            });
+            gallery.addEventListener('mouseleave', () => {
+                isDown = false;
+                gallery.classList.remove('active');
+            });
+            gallery.addEventListener('mouseup', () => {
+                isDown = false;
+                gallery.classList.remove('active');
+            });
+            gallery.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - gallery.offsetLeft;
+                const walk = (x - startX) * 2;
+                gallery.scrollLeft = scrollLeft - walk;
+            });
+            // Touch events for mobile
+            gallery.addEventListener('touchstart', (e) => {
+                isDown = true;
+                startX = e.touches[0].pageX - gallery.offsetLeft;
+                scrollLeft = gallery.scrollLeft;
+            });
+            gallery.addEventListener('touchend', () => {
+                isDown = false;
+            });
+            gallery.addEventListener('touchmove', (e) => {
+                if (!isDown) return;
+                const x = e.touches[0].pageX - gallery.offsetLeft;
+                const walk = (x - startX) * 2;
+                gallery.scrollLeft = scrollLeft - walk;
+            });
+        });
+    </script>
+</body>
+</html>
