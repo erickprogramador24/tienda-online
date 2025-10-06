@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto - Best Shop</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Material UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #131921;
+            --secondary-color: #232f3e;
+            --accent-color: #ff9900;
+            --light-bg: #f8f9fa;
+            --dark-bg: #0f1419;
+            --card-bg-light: rgba(255, 255, 255, 0.8);
+            --card-bg-dark: rgba(30, 35, 41, 0.8);
+            --text-light: #1f2937;
+            --text-dark: #e5e7eb;
+            --border-light: #e5e7eb;
+            --border-dark: #374151;
+            --input-bg-dark: #374151;
+            --hover-bg-dark: #4b5563;
+            --cart-bg-dark: #1e293b;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        .glass-effect-dark {
+            background: rgba(30, 35, 41, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .cart-notification {
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .image-gallery {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        .image-gallery img {
+            scroll-snap-align: start;
+            flex-shrink: 0;
+        }
+        .dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--text-dark);
+        }
+        .dark-mode .product-card {
+            background-color: var(--card-bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+        .dark-mode .light-card {
+            background-color: var(--card-bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+        .dark-mode .category-card {
+            background-color: var(--card-bg-dark);
+            border-color: var(--border-dark);
+        }
+        .dark-mode .product-description {
+            background-color: var(--cart-bg-dark);
+            color: var(--text-dark);
+        }
+        .dark-mode .prose {
+            color: var(--text-dark);
+        }
+        .dark-mode .prose h1,
+        .dark-mode .prose h2,
+        .dark-mode .prose h3,
+        .dark-mode .prose h4,
+        .dark-mode .prose h5,
+        .dark-mode .prose h6 {
+            color: var(--text-dark);
+        }
+        .dark-mode .prose a {
+            color: #60a5fa;
+        }
+        .dark-mode table {
+            border-color: var(--border-dark);
+        }
+        .dark-mode th,
+        .dark-mode td {
+            border-color: var(--border-dark);
+        }
+        .dark-mode .review-text {
+            color: var(--text-dark);
+        }
+        .dark-mode .review-author {
+            color: #9ca3af;
+        }
+        .light-mode {
+            background-color: var(--light-bg);
+            color: var(--text-light);
+        }
+        .dark-card {
+            background-color: var(--card-bg-dark);
+            border: 1px solid var(--border-dark);
+        }
+        .light-card {
+            background-color: var(--card-bg-light);
+        }
+        .smooth-transition {
+            transition: all 0.3s ease;
+        }
+        .thumbnail-active {
+            border: 2px solid var(--accent-color);
+        }
+        /* Estilos específicos para modo oscuro */
+        .dark-mode .product-info-text {
+            color: white;
+        }
+        .dark-mode .product-price {
+            color: white;
+        }
+        .dark-mode .feature-list li {
+            color: var(--text-dark);
+        }
+        .dark-mode .spec-table {
+            color: var(--text-dark);
+        }
+        .dark-mode .spec-table th,
+        .dark-mode .spec-table td {
+            border-color: var(--border-dark);
+        }
+        .dark-mode .review-content {
+            background-color: var(--cart-bg-dark);
+            border-color: var(--border-dark);
+        }
+        .dark-mode .review-content h4 {
+            color: var(--text-dark);
+        }
+        .dark-mode .quantity-controls {
+            background-color: var(--input-bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+        .dark-mode .quantity-display {
+            background-color: var(--input-bg-dark);
+            color: var(--text-dark);
+        }
+        .dark-mode input,
+        .dark-mode textarea {
+            background-color: var(--input-bg-dark);
+            color: var(--text-dark);
+            border-color: var(--border-dark);
+        }
+        .dark-mode input::placeholder {
+            color: #9ca3af;
+        }
+        .dark-mode .stock-info {
+            background-color: #1f2937;
+            color: #a7f3d0;
+        }
+        .dark-mode .discount-info {
+            color: #34d399;
+        }
+        .dark-mode .original-price {
+            color: #9ca3af;
+        }
+        .dark-mode .product-title {
+            color: white;
+        }
+        .dark-mode .rating-text {
+            color: #d1d5db;
+        }
+        .dark-mode .breadcrumb a {
+            color: #60a5fa;
+        }
+        .dark-mode .breadcrumb span {
+            color: #9ca3af;
+        }
+        /* Estilos específicos para el carrito */
+        .dark-mode #cart-sidebar {
+            background-color: var(--cart-bg-dark);
+            border-left: 1px solid var(--border-dark);
+        }
+        .dark-mode .cart-item {
+            border-bottom-color: var(--border-dark);
+        }
+        .dark-mode .cart-item-info {
+            color: var(--text-dark);
+        }
+        .dark-mode .cart-item-price {
+            color: #d1d5db;
+        }
+        .dark-mode .cart-total {
+            color: var(--text-dark);
+        }
+        .dark-mode .cart-empty {
+            color: #9ca3af;
+        }
+        /* Estilos para la descripción del producto */
+        .dark-mode .product-description-content {
+            background-color: var(--cart-bg-dark);
+            border-color: var(--border-dark);
+        }
+        .dark-mode .description-heading {
+            color: var(--text-dark);
+        }
+        .dark-mode .description-text {
+            color: var(--text-dark);
+        }
+        .dark-mode .features-list li {
+            color: var(--text-dark);
+        }
+        .dark-mode .specs-table {
+            background-color: transparent;
+        }
+        .dark-mode .specs-table th,
+        .dark-mode .specs-table td {
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 smooth-transition">
+        <div class="bg-[#131921] text-white p-2">
+            <div class="container mx-auto flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <span class="material-icons text-3xl mr-2">shopping_cart</span>
+                        <h1 class="text-xl font-bold">Best Shop</h1>
+                    </a>
+                </div>
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 mx-4 max-w-2xl">
+                    <input type="text" placeholder="Buscar productos..." class="w-full px-4 py-2 text-gray-800 rounded-l dark:bg-[#1e293b] dark:text-white dark:border-[#334155] dark:placeholder-[#94a3b8]">
+                    <button class="bg-[#febd69] hover:bg-[#f3a847] text-gray-800 px-4 rounded-r">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+                <!-- Navigation -->
+                <div class="flex items-center space-x-4">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="flex items-center p-1 rounded-full hover:bg-[#334155]">
+                        <span class="material-icons" id="theme-icon">dark_mode</span>
+                    </button>
+                    <!-- Account -->
+                    <div class="hidden md:flex flex-col cursor-pointer hover:text-[#febd69]">
+                        <span class="text-xs">Hola, Identifícate</span>
+                        <span class="text-sm font-bold">Cuenta y Listas</span>
+                    </div>
+                    <!-- Returns & Orders -->
+                    <div class="hidden md:flex flex-col cursor-pointer hover:text-[#febd69]">
+                        <span class="text-xs">Devoluciones</span>
+                        <span class="text-sm font-bold">y Pedidos</span>
+                    </div>
+                    <!-- Cart -->
+                    <div class="flex items-center cursor-pointer relative" id="cart-icon">
+                        <span class="material-icons text-2xl">shopping_cart</span>
+                        <span class="absolute -top-1 -right-1 bg-[#ff9900] text-black rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold" id="cart-count">0</span>
+                        <span class="ml-1 font-bold hidden md:inline">Carrito</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Mobile Search -->
+            <div class="md:hidden mt-2 px-2">
+                <div class="flex">
+                    <input type="text" placeholder="Buscar productos..." class="w-full px-4 py-2 text-gray-800 rounded-l dark:bg-[#1e293b] dark:text-white dark:border-[#334155] dark:placeholder-[#94a3b8]">
+                    <button class="bg-[#febd69] hover:bg-[#f3a847] text-gray-800 px-4 rounded-r">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Secondary Nav -->
+        <div class="bg-[#232f3e] text-white py-2 px-4">
+            <div class="container mx-auto flex items-center space-x-4 overflow-x-auto">
+                <div class="flex items-center cursor-pointer whitespace-nowrap hover:text-[#febd69]">
+                    <span class="material-icons text-sm mr-1">menu</span>
+                    <span>Todo</span>
+                </div>
+                <div class="cursor-pointer whitespace-nowrap hover:text-[#febd69]">Ofertas del día</div>
+                <div class="cursor-pointer whitespace-nowrap hover:text-[#febd69]">Servicio al Cliente</div>
+                <div class="cursor-pointer whitespace-nowrap hover:text-[#febd69]">Listas</div>
+                <div class="cursor-pointer whitespace-nowrap hover:text-[#febd69]">Tarjetas de Regalo</div>
+                <div class="cursor-pointer whitespace-nowrap hover:text-[#febd69]">Vender</div>
+            </div>
+        </div>
+    </header>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Breadcrumb -->
+        <div class="text-sm mb-4">
+            <a href="index.html" class="text-blue-500 hover:underline breadcrumb">Inicio</a>
+            <span class="mx-2 breadcrumb">></span>
+            <a href="#" class="text-blue-500 hover:underline breadcrumb">Electrónicos</a>
+            <span class="mx-2 breadcrumb">></span>
+            <span class="text-gray-500 dark:text-[#94a3b8] breadcrumb">Auriculares Inalámbricos</span>
+        </div>
+        <!-- Product Detail -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <!-- Product Images -->
+            <div class="space-y-4">
+                <!-- Main Image -->
+                <div class="bg-gray-100 dark:bg-[#374151] rounded-lg p-4 h-96 flex items-center justify-center">
+                    <img id="main-product-image" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                         alt="Auriculares Inalámbricos" class="max-h-full max-w-full object-contain">
+                </div>
+                <!-- Thumbnails -->
+                <div class="grid grid-cols-4 gap-2">
+                    <div class="thumbnail cursor-pointer border-2 border-transparent rounded overflow-hidden hover:border-[#ff9900] thumbnail-active">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+                             alt="Thumbnail 1" class="w-full h-20 object-cover" data-src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                    </div>
+                    <div class="thumbnail cursor-pointer border-2 border-transparent rounded overflow-hidden hover:border-[#ff9900]">
+                        <img src="https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+                             alt="Thumbnail 2" class="w-full h-20 object-cover" data-src="https://images.unsplash.com/photo-1484704849700-f032a568e944?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                    </div>
+                    <div class="thumbnail cursor-pointer border-2 border-transparent rounded overflow-hidden hover:border-[#ff9900]">
+                        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+                             alt="Thumbnail 3" class="w-full h-20 object-cover" data-src="https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                    </div>
+                    <div class="thumbnail cursor-pointer border-2 border-transparent rounded overflow-hidden hover:border-[#ff9900]">
+                        <img src="https://images.unsplash.com/photo-1590650046871-92c887187603?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80"
+                             alt="Thumbnail 4" class="w-full h-20 object-cover" data-src="https://images.unsplash.com/photo-1590650046871-92c887187603?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                    </div>
+                </div>
+            </div>
+            <!-- Product Info -->
+            <div class="space-y-6">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold product-title">Auriculares Inalámbricos Premium</h1>
+                    <div class="flex items-center mt-2">
+                        <div class="flex text-yellow-400 mr-2">
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star_half</span>
+                        </div>
+                        <span class="text-sm rating-text">4.7 de 5</span>
+                        <a href="#reviews" class="text-blue-500 text-sm ml-2 hover:underline">124 reseñas</a>
+                    </div>
+                </div>
+                <div class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 p-3 rounded stock-info">
+                    <span class="font-bold">En stock</span> - Envío gratis
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-end">
+                        <span class="text-3xl font-bold product-price">$129.99</span>
+                        <span class="text-gray-500 ml-2 original-price line-through">$179.99</span>
+                        <span class="text-green-600 ml-2 discount-info">28% de descuento</span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 product-info-text">Incluye impuestos (IVA)</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="font-bold mb-2 product-info-text">Color:</h3>
+                        <div class="flex space-x-2">
+                            <button class="w-8 h-8 rounded-full bg-black border-2 border-transparent hover:border-[#ff9900] focus:outline-none focus:ring-2 focus:ring-[#ff9900]"></button>
+                            <button class="w-8 h-8 rounded-full bg-white border-2 border-gray-300 hover:border-[#ff9900] focus:outline-none focus:ring-2 focus:ring-[#ff9900]"></button>
+                            <button class="w-8 h-8 rounded-full bg-blue-500 border-2 border-transparent hover:border-[#ff9900] focus:outline-none focus:ring-2 focus:ring-[#ff9900]"></button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-bold mb-2 product-info-text">Cantidad:</h3>
+                        <div class="flex items-center border rounded w-fit">
+                            <button class="decrease-quantity bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-l hover:bg-gray-200 dark:hover:bg-gray-600 quantity-controls">-</button>
+                            <span class="quantity bg-white dark:bg-gray-800 px-4 py-1 quantity-display" id="product-quantity">1</span>
+                            <button class="increase-quantity bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-r hover:bg-gray-200 dark:hover:bg-gray-600 quantity-controls">+</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <button id="add-to-cart-main" class="w-full bg-[#ff9900] hover:bg-[#e68900] text-black font-bold py-3 px-4 rounded flex items-center justify-center"
+                            data-id="1" data-name="Auriculares Inalámbricos Premium" data-price="129.99" data-image="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80">
+                        <span class="material-icons mr-2">shopping_cart</span>
+                        Añadir al carrito
+                    </button>
+                    <button class="w-full bg-[#232f3e] hover:bg-[#131921] text-white font-bold py-3 px-4 rounded flex items-center justify-center">
+                        <span class="material-icons mr-2">flash_on</span>
+                        Comprar ahora
+                    </button>
+                </div>
+                <div class="border-t dark:border-gray-700 pt-4">
+                    <ul class="space-y-2 features-list">
+                        <li class="flex items-center product-info-text">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Cancelación de ruido activa
+                        </li>
+                        <li class="flex items-center product-info-text">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Hasta 30 horas de batería
+                        </li>
+                        <li class="flex items-center product-info-text">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Resistencia al agua IPX7
+                        </li>
+                        <li class="flex items-center product-info-text">
+                            <span class="material-icons text-green-500 mr-2">check_circle</span>
+                            Conexión Bluetooth 5.2
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Product Description -->
+        <div class="bg-white dark:bg-[#1e293b] rounded-lg shadow p-6 mb-12 product-description product-description-content">
+            <h2 class="text-2xl font-bold mb-4 description-heading">Descripción del producto</h2>
+            <div class="prose dark:prose-invert max-w-none">
+                <p class="mb-4 description-text">Los auriculares inalámbricos premium ofrecen una experiencia de audio excepcional con cancelación activa de ruido para sumergirte en tu música sin distracciones. Diseñados para el máximo confort, cuentan con almohadillas suaves y un diseño ergonómico que permite usarlos durante horas.</p>
+                <p class="mb-4 description-text">Con hasta 30 horas de reproducción con una sola carga, estos auriculares son perfectos para viajes largos o días ocupados. La tecnología Bluetooth 5.2 garantiza una conexión estable y de baja latencia, mientras que la resistencia al agua IPX7 los hace ideales para usar en cualquier condición.</p>
+                <h3 class="text-xl font-bold mt-6 mb-2 description-heading">Características principales:</h3>
+                <ul class="list-disc pl-6 mb-4 features-list">
+                    <li class="description-text">Cancelación activa de ruido adaptativa</li>
+                    <li class="description-text">Micrófonos integrados con reducción de ruido para llamadas claras</li>
+                    <li class="description-text">Control táctil intuitivo en los auriculares</li>
+                    <li class="description-text">Modo transparencia para estar consciente de tu entorno</li>
+                    <li class="description-text">Estuche de carga compacto y portátil</li>
+                </ul>
+                <h3 class="text-xl font-bold mt-6 mb-2 description-heading">Especificaciones técnicas:</h3>
+                <table class="min-w-full border collapse specs-table">
+                    <thead>
+                        <tr class="bg-gray-100 dark:bg-gray-700">
+                            <th class="border p-2 text-left description-text">Característica</th>
+                            <th class="border p-2 text-left description-text">Detalle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border p-2 description-text">Tipo de auriculares</td>
+                            <td class="border p-2 description-text">Over-ear, inalámbricos</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2 description-text">Tecnología de conexión</td>
+                            <td class="border p-2 description-text">Bluetooth 5.2</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2 description-text">Autonomía</td>
+                            <td class="border p-2 description-text">Hasta 30 horas</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2 description-text">Peso</td>
+                            <td class="border p-2 description-text">250 gramos</td>
+                        </tr>
+                        <tr>
+                            <td class="border p-2 description-text">Resistencia al agua</td>
+                            <td class="border p-2 description-text">IPX7</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Reviews Section -->
+        <div id="reviews" class="bg-white dark:bg-[#1e293b] rounded-lg shadow p-6 mb-12 review-content">
+            <h2 class="text-2xl font-bold mb-6 description-heading">Reseñas de clientes</h2>
+            <div class="space-y-6">
+                <!-- Review 1 -->
+                <div class="border-b dark:border-gray-700 pb-6">
+                    <div class="flex items-center mb-2">
+                        <div class="flex text-yellow-400 mr-2">
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                        </div>
+                        <span class="text-sm rating-text">5 de 5</span>
+                    </div>
+                    <h4 class="font-bold description-heading">Excelente calidad de sonido</h4>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mt-1 review-author">Por Juan Pérez - 15 de septiembre de 2025</p>
+                    <p class="mt-2 review-text">Compré estos auriculares hace un mes y estoy muy satisfecho. La cancelación de ruido es increíble y la calidad de sonido es superior a otros auriculares que he probado. La batería dura exactamente lo que prometen. Muy recomendados.</p>
+                </div>
+                <!-- Review 2 -->
+                <div class="border-b dark:border-gray-700 pb-6">
+                    <div class="flex items-center mb-2">
+                        <div class="flex text-yellow-400 mr-2">
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star_half</span>
+                        </div>
+                        <span class="text-sm rating-text">4.5 de 5</span>
+                    </div>
+                    <h4 class="font-bold description-heading">Muy cómodos para viajes largos</h4>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mt-1 review-author">Por María González - 5 de octubre de 2025</p>
+                    <p class="mt-2 review-text">Los usé en un vuelo transatlántico y fueron perfectos. La cancelación de ruido bloqueó casi por completo el sonido de los motores. Son muy cómodos incluso después de varias horas de uso. El único pequeño inconveniente es que el estuche de carga es un poco grande.</p>
+                </div>
+                <!-- Review 3 -->
+                <div class="border-b dark:border-gray-700 pb-6">
+                    <div class="flex items-center mb-2">
+                        <div class="flex text-yellow-400 mr-2">
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star</span>
+                            <span class="material-icons text-sm">star_outline</span>
+                        </div>
+                        <span class="text-sm rating-text">4 de 5</span>
+                    </div>
+                    <h4 class="font-bold description-heading">Buena relación calidad-precio</h4>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mt-1 review-author">Por Carlos Rodríguez - 20 de septiembre de 2025</p>
+                    <p class="mt-2 review-text">Para el precio, estos auriculares ofrecen muy buenas características. El sonido es claro y los bajos son potentes sin ser abrumadores. El micrófono funciona bien para llamadas. El único problema que tuve fue con la conexión Bluetooth que ocasionalmente se cortaba, pero actualizando el firmware se solucionó.</p>
+                </div>
+            </div>
+            <div class="mt-6">
+                <h3 class="text-lg font-bold mb-4 description-heading">Deja tu reseña</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block mb-1 product-info-text">Calificación:</label>
+                        <div class="flex space-x-1">
+                            <button class="text-yellow-400 text-2xl hover:text-yellow-500">★</button>
+                            <button class="text-yellow-400 text-2xl hover:text-yellow-500">★</button>
+                            <button class="text-yellow-400 text-2xl hover:text-yellow-500">★</button>
+                            <button class="text-yellow-400 text-2xl hover:text-yellow-500">★</button>
+                            <button class="text-yellow-400 text-2xl hover:text-yellow-500">★</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block mb-1 product-info-text">Título:</label>
+                        <input type="text" class="w-full p-2 border rounded dark:bg-[#374151] dark:border-[#4b5563] dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block mb-1 product-info-text">Reseña:</label>
+                        <textarea rows="4" class="w-full p-2 border rounded dark:bg-[#374151] dark:border-[#4b5563] dark:text-white"></textarea>
+                    </div>
+                    <button class="bg-[#ff9900] hover:bg-[#e68900] text-black font-bold py-2 px-4 rounded">
+                        Enviar reseña
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Related Products -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 description-heading">Productos relacionados</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Product 1 -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg smooth-transition light-card dark:dark-card">
+                    <div class="image-gallery h-48 bg-gray-200 dark:bg-[#374151]">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Smartwatch" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2 product-title">Smartwatch Deportivo</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                            </div>
+                            <span class="text-sm ml-2 rating-text">(5.0)</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 product-info-text">Monitor de actividad y notificaciones inteligentes</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg product-price">$129.99</span>
+                            <button class="bg-[#ff9900] hover:bg-[#e68900] text-black py-1 px-3 rounded add-to-cart" data-id="2" data-name="Smartwatch Deportivo" data-price="129.99" data-image="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60">
+                                Añadir al carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 2 -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg smooth-transition light-card dark:dark-card">
+                    <div class="image-gallery h-48 bg-gray-200 dark:bg-[#374151]">
+                        <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Cámara" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2 product-title">Cámara DSLR Profesional</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star_outline</span>
+                            </div>
+                            <span class="text-sm ml-2 rating-text">(4.0)</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 product-info-text">Captura momentos increíbles con alta resolución</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg product-price">$599.99</span>
+                            <button class="bg-[#ff9900] hover:bg-[#e68900] text-black py-1 px-3 rounded add-to-cart" data-id="3" data-name="Cámara DSLR Profesional" data-price="599.99" data-image="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60">
+                                Añadir al carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 3 -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg smooth-transition light-card dark:dark-card">
+                    <div class="image-gallery h-48 bg-gray-200 dark:bg-[#374151]">
+                        <img src="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Portátil" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2 product-title">Portátil Ultraligero</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star_half</span>
+                            </div>
+                            <span class="text-sm ml-2 rating-text">(4.5)</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 product-info-text">Rendimiento excepcional en un diseño compacto</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg product-price">$899.99</span>
+                            <button class="bg-[#ff9900] hover:bg-[#e68900] text-black py-1 px-3 rounded add-to-cart" data-id="4" data-name="Portátil Ultraligero" data-price="899.99" data-image="https://images.unsplash.com/photo-1541807084-5c52b6b3adef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60">
+                                Añadir al carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 4 -->
+                <div class="product-card rounded-lg overflow-hidden shadow-lg smooth-transition light-card dark:dark-card">
+                    <div class="image-gallery h-48 bg-gray-200 dark:bg-[#374151]">
+                        <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Altavoz" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2 product-title">Altavoz Bluetooth Portátil</h3>
+                        <div class="flex items-center mb-2">
+                            <div class="flex text-yellow-400">
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star</span>
+                                <span class="material-icons text-sm">star_half</span>
+                            </div>
+                            <span class="text-sm ml-2 rating-text">(4.5)</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 product-info-text">Sonido potente y claro con hasta 20 horas de reproducción</p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-lg product-price">$79.99</span>
+                            <button class="bg-[#ff9900] hover:bg-[#e68900] text-black py-1 px-3 rounded add-to-cart" data-id="5" data-name="Altavoz Bluetooth Portátil" data-price="79.99" data-image="https://images.unsplash.com/photo-1587829741301-dc798b83add3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60">
+                                Añadir al carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-80 bg-white dark:bg-[#1e293b] shadow-xl z-50 transform translate-x-full transition-transform duration-300 overflow-y-auto">
+        <div class="p-4 border-b dark:border-[#334155] flex justify-between items-center">
+            <h2 class="text-xl font-bold dark:text-white product-title">Tu Carrito</h2>
+            <button id="close-cart" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+        <div id="cart-items" class="p-4 h-[calc(100%-180px)] overflow-y-auto">
+            <p id="empty-cart-message" class="text-center text-gray-500 dark:text-gray-400 py-8 cart-empty">Tu carrito está vacío</p>
+        </div>
+        <div class="p-4 border-t dark:border-[#334155]">
+            <div class="flex justify-between mb-4">
+                <span class="font-bold dark:text-white cart-total">Total:</span>
+                <span id="cart-total" class="font-bold dark:text-white cart-total">$0.00</span>
+            </div>
+            <button class="w-full bg-[#ff9900] hover:bg-[#e68900] text-black font-bold py-2 px-4 rounded">
+                Proceder al Pago
+            </button>
+        </div>
+    </div>
+    <!-- Cart Overlay -->
+    <div id="cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    <!-- Add to Cart Notification -->
+    <div id="cart-notification" class="fixed top-4 right-4 bg-green-500 text-white p-4 rounded shadow-lg z-50 hidden cart-notification">
+        <div class="flex items-center">
+            <span class="material-icons mr-2">check_circle</span>
+            <span>Producto añadido al carrito</span>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="bg-[#232f3e] text-white py-8 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Conócenos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Trabajar en Best Shop</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Información corporativa</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Departamento de prensa</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Gana dinero con nosotros</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Vender en Best Shop</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Vender en Best Shop Business</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Programa de afiliados</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Métodos de pago</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Tarjetas de crédito y débito</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Tarjetas de regalo</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Meses sin intereses</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">¿Necesitas ayuda?</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Ver tu carrito</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Estado de pedidos</a></li>
+                        <li><a href="#" class="hover:underline hover:text-[#febd69]">Devoluciones</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-600 mt-8 pt-8 text-center">
+                <p class="dark:text-[#e2e8f0]">DESARROLLADO POR ERICK PROGRAMADOR</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+        // Check for saved theme preference or default to light
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            themeIcon.textContent = 'light_mode';
+        }
+        themeToggle.addEventListener('click', () => {
+            if (body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                themeIcon.textContent = 'light_mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                themeIcon.textContent = 'dark_mode';
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        // Cart Functionality
+        const cartIcon = document.getElementById('cart-icon');
+        const cartSidebar = document.getElementById('cart-sidebar');
+        const closeCart = document.getElementById('close-cart');
+        const cartOverlay = document.getElementById('cart-overlay');
+        const cartItems = document.getElementById('cart-items');
+        const cartCount = document.getElementById('cart-count');
+        const cartTotal = document.getElementById('cart-total');
+        const emptyCartMessage = document.getElementById('empty-cart-message');
+        const cartNotification = document.getElementById('cart-notification');
+        const addToCartMain = document.getElementById('add-to-cart-main');
+        const quantityDisplay = document.getElementById('product-quantity');
+        const increaseQuantityBtn = document.querySelector('.increase-quantity');
+        const decreaseQuantityBtn = document.querySelector('.decrease-quantity');
+        // Cargar carrito desde localStorage o inicializar vacío
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentQuantity = 1;
+        // Update cart display
+        function updateCartDisplay() {
+            // Update cart count
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = totalItems > 0 ? totalItems : '0';
+
+            // Update cart items
+            cartItems.innerHTML = '';
+            if (cart.length === 0) {
+                emptyCartMessage.classList.remove('hidden');
+                cartTotal.textContent = '$0.00';
+            } else {
+                emptyCartMessage.classList.add('hidden');
+                let total = 0;
+                cart.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex items-center mb-4 pb-4 border-b dark:border-gray-700 cart-item';
+                    itemElement.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded">
+                        <div class="ml-4 flex-1">
+                            <h3 class="font-bold dark:text-white cart-item-info">${item.name}</h3>
+                            <p class="text-gray-600 dark:text-gray-300 cart-item-price">$${item.price} x ${item.quantity}</p>
+                            <div class="flex items-center mt-2">
+                                <button class="decrease-quantity bg-gray-200 dark:bg-gray-700 rounded-l px-2 py-1 quantity-controls" data-id="${item.id}">-</button>
+                                <span class="quantity bg-gray-100 dark:bg-gray-800 dark:text-white px-3 py-1 quantity-display">${item.quantity}</span>
+                                <button class="increase-quantity bg-gray-200 dark:bg-gray-700 rounded-r px-2 py-1 quantity-controls" data-id="${item.id}">+</button>
+                                <button class="remove-item text-red-500 ml-4 dark:text-red-400" data-id="${item.id}">
+                                    <span class="material-icons text-sm">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    cartItems.appendChild(itemElement);
+                    total += item.price * item.quantity;
+                });
+                cartTotal.textContent = `$${total.toFixed(2)}`;
+            }
+            // Save cart to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+        // Show cart notification
+        function showCartNotification() {
+            cartNotification.classList.remove('hidden');
+            setTimeout(() => {
+                cartNotification.classList.add('hidden');
+            }, 3000);
+        }
+        // Add to cart functionality
+        function addToCart(id, name, price, image, quantity) {
+            // Check if item already in cart
+            const existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id,
+                    name,
+                    price,
+                    image,
+                    quantity: quantity
+                });
+            }
+            updateCartDisplay();
+            showCartNotification();
+        }
+        // Add to cart from main button
+        addToCartMain.addEventListener('click', (e) => {
+            const id = e.target.getAttribute('data-id') || e.target.parentElement.getAttribute('data-id');
+            const name = e.target.getAttribute('data-name') || e.target.parentElement.getAttribute('data-name');
+            const price = parseFloat(e.target.getAttribute('data-price') || e.target.parentElement.getAttribute('data-price'));
+            const image = e.target.getAttribute('data-image') || e.target.parentElement.getAttribute('data-image');
+            addToCart(id, name, price, image, currentQuantity);
+        });
+        // Add to cart from related products
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                const name = e.target.getAttribute('data-name');
+                const price = parseFloat(e.target.getAttribute('data-price'));
+                const image = e.target.getAttribute('data-image');
+                addToCart(id, name, price, image, 1);
+            });
+        });
+        // Quantity controls
+        increaseQuantityBtn.addEventListener('click', () => {
+            currentQuantity++;
+            quantityDisplay.textContent = currentQuantity;
+        });
+        decreaseQuantityBtn.addEventListener('click', () => {
+            if (currentQuantity > 1) {
+                currentQuantity--;
+                quantityDisplay.textContent = currentQuantity;
+            }
+        });
+        // Event delegation for cart item actions
+        cartItems.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-id]');
+            if (!target) return;
+            const id = target.getAttribute('data-id');
+            if (e.target.classList.contains('increase-quantity') || e.target.parentElement.classList.contains('increase-quantity')) {
+                const item = cart.find(item => item.id === id);
+                if (item) {
+                    item.quantity += 1;
+                    updateCartDisplay();
+                }
+            } else if (e.target.classList.contains('decrease-quantity') || e.target.parentElement.classList.contains('decrease-quantity')) {
+                const item = cart.find(item => item.id === id);
+                if (item && item.quantity > 1) {
+                    item.quantity -= 1;
+                    updateCartDisplay();
+                }
+            } else if (e.target.classList.contains('remove-item') || e.target.parentElement.classList.contains('remove-item')) {
+                cart = cart.filter(item => item.id !== id);
+                updateCartDisplay();
+            }
+        });
+        // Cart sidebar toggle
+        cartIcon.addEventListener('click', () => {
+            cartSidebar.classList.remove('translate-x-full');
+            cartOverlay.classList.remove('hidden');
+        });
+        closeCart.addEventListener('click', () => {
+            cartSidebar.classList.add('translate-x-full');
+            cartOverlay.classList.add('hidden');
+        });
+        cartOverlay.addEventListener('click', () => {
+            cartSidebar.classList.add('translate-x-full');
+            cartOverlay.classList.add('hidden');
+        });
+        // Initialize cart display
+        updateCartDisplay();
+        // Thumbnail gallery functionality
+        document.querySelectorAll('.thumbnail').forEach(thumbnail => {
+            thumbnail.addEventListener('click', () => {
+                // Remove active class from all thumbnails
+                document.querySelectorAll('.thumbnail').forEach(t => {
+                    t.classList.remove('thumbnail-active');
+                });
+                // Add active class to clicked thumbnail
+                thumbnail.classList.add('thumbnail-active');
+                // Update main image
+                const mainImage = document.getElementById('main-product-image');
+                const newImageSrc = thumbnail.querySelector('img').getAttribute('data-src');
+                mainImage.setAttribute('src', newImageSrc);
+            });
+        });
+        // Asegurar que los inputs en el carrito sidebar tengan el estilo correcto en modo oscuro
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.classList.add('dark:bg-[#374151]', 'dark:border-[#4b5563]', 'dark:text-white');
+        });
+    </script>
+</body>
+</html>
